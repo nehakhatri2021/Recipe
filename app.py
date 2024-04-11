@@ -38,6 +38,19 @@ st.markdown(
     .stMarkdown {
         color: white;
     }
+    .recipe {
+        background-color: #333;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .recipe-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    .recipe-details {
+        font-size: 18px;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -47,7 +60,9 @@ def login():
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     if st.button("Login"):
-        if username == "nehak" and password == "123456":
+        if (username == "ap" and password == "11") or \
+           (username == "ag" and password == "22") or \
+           (username == "nk" and password == "33"):
             st.success("Login successful!")
             return True
         else:
@@ -84,9 +99,10 @@ def display_recipes_data(recipes_data):
         if isinstance(data, str):
             st.markdown(data)
         else:
+            st.markdown('<div class="recipe">', unsafe_allow_html=True)
             st.image(data['image'])
-            st.markdown(f"## Recipe Name: {data['title']}")
-            st.markdown(f"## Recipe ID: {data['id']}")
+            st.markdown(f'<p class="recipe-title">Recipe Name: {data["title"]}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="recipe-details">Recipe ID: {data["id"]}</p>', unsafe_allow_html=True)
             api_connection = SpoonacularMetadataConnectionProvider(connection_name='recipeProvider')
 
             with st.expander("See Recipe Details"):
@@ -103,7 +119,8 @@ def display_recipes_data(recipes_data):
                     st.markdown(f"## Ready in Minutes: {recipe_data['readyInMinutes']}")
                 except Exception as e:
                     st.error(f"Error occurred while fetching recipe details: {e}")
-                    
+            st.markdown('</div>', unsafe_allow_html=True)
+            
     st.markdown("---")
 
 def image(src_as_string, **style):

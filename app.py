@@ -47,7 +47,7 @@ def login():
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     if st.button("Login"):
-        if username == "neha" and password == "1234":
+        if username == "nehak" and password == "123456":
             st.success("Login successful!")
             return True
         else:

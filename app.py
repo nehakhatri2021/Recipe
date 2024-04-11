@@ -1,5 +1,6 @@
 from connection2 import SpoonacularMetadataConnectionProvider
 import streamlit as st
+import speech_recognition as sr
 from connection import SpoonacularConnectionProvider
 from requests import get
 from htbuilder import HtmlElement, div, ul, li, br, hr, a, p, img, styles, classes, fonts
@@ -11,13 +12,13 @@ st.markdown(
     """
     <style>
     .stApp {
-        width: 100vw;
-        height: 100vh;
+        max-width: 700px;
+        margin: 0 auto;
         color: white;
     }
     .stTextInput>div>div>input {
         background-color: #f0f0f0;
-        color: black;
+        color: black;  /* Keep the user input text as black */
         font-size: 16px;
         padding: 12px 15px;
         border: 1px solid #ccc;
@@ -38,54 +39,54 @@ st.markdown(
     .stMarkdown {
         color: white;
     }
-    .recipe {
-        background-color: #333;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-    .recipe-title {
-        font-size: 24px;
-        margin-bottom: 10px;
-    }
-    .recipe-details {
-        font-size: 18px;
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-def login():
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if (username == "ap" and password == "11") or \
-           (username == "ag" and password == "22") or \
-           (username == "nk" and password == "33"):
-            st.success("Login successful!")
-            return True
-        else:
-            st.error("Invalid username or password")
-            return False
+def listen():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        st.write("Listening...")
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+
+    try:
+        text = recognizer.recognize_google(audio)
+        st.write("You said:", text)
+        return text
+    except sr.UnknownValueError:
+        st.write("Sorry, could not understand audio")
+        return ""
+    except sr.RequestError as e:
+        st.write("Error occurred during request to Google Speech Recognition service; {0}".format(e))
+        return ""
 
 def main():
-    if not login():
-        return
+    """
+    The main function to run the recipe information web app.
 
+    This function sets up the Streamlit app, connects to the Spoonacular API,
+    and handles user interactions to fetch and display recipe data.
+    """
     api_connection = SpoonacularConnectionProvider(connection_name='recipeProvider')
 
     st.title("Recipedia")
     st.markdown("Enter your desired food name and we'll find you a recipe! :)")
-
+    
     recipes_input = st.text_input("Enter your preferred food choice")
     
+    voice_command = st.checkbox("Voice Command")
+    if voice_command:
+        voice_input = listen()
+        if voice_input:
+            recipes_input = voice_input
 
     if st.button("Get Recipes"):
         try:
             recipes = [city.strip() for city in recipes_input.split(",")]
             recipes_data = api_connection.query(recipes)
-            if len(recipes_data) != 0:
+            if(len(recipes_data) != 0):
                 st.success("Recipes fetched successfully!")
                 
                 display_recipes_data(recipes_data)
@@ -99,10 +100,9 @@ def display_recipes_data(recipes_data):
         if isinstance(data, str):
             st.markdown(data)
         else:
-            st.markdown('<div class="recipe">', unsafe_allow_html=True)
             st.image(data['image'])
-            st.markdown(f'<p class="recipe-title">Recipe Name: {data["title"]}</p>', unsafe_allow_html=True)
-            st.markdown(f'<p class="recipe-details">Recipe ID: {data["id"]}</p>', unsafe_allow_html=True)
+            st.markdown(f"## Recipe Name: {data['title']}")
+            st.markdown(f"## Recipe ID: {data['id']}")
             api_connection = SpoonacularMetadataConnectionProvider(connection_name='recipeProvider')
 
             with st.expander("See Recipe Details"):
@@ -119,8 +119,7 @@ def display_recipes_data(recipes_data):
                     st.markdown(f"## Ready in Minutes: {recipe_data['readyInMinutes']}")
                 except Exception as e:
                     st.error(f"Error occurred while fetching recipe details: {e}")
-            st.markdown('</div>', unsafe_allow_html=True)
-            
+                    
     st.markdown("---")
 
 def image(src_as_string, **style):
@@ -130,6 +129,7 @@ def link(link, text, **style):
     return a(_href=link, _target="_blank", style=styles(**style))(text)
 
 def layout(*args):
+
     style = """
     <style>
       # MainMenu {visibility: hidden;}
@@ -147,7 +147,8 @@ def layout(*args):
         opacity=0.6
     )
 
-    style_hr = styles()
+    style_hr = styles(
+    )
 
     body = p()
     foot = div(style=style_div)(hr(style=style_hr), body)
@@ -174,6 +175,7 @@ def footer():
         link("https://github.com/Pavel401", image('https://res.cloudinary.com/dc0tfxkph/image/upload/v1690664339/47685150.jpg',
         	width=px(24), height=px(25), margin= "0em", border_radius=px(50))),
         br(),
+        "<b>About Us</b>: Recipedia is a platform dedicated to helping you find the perfect recipe for any occasion.",
     ]
     layout(*myargs)
 

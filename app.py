@@ -122,7 +122,7 @@ def layout(*args):
       #MainMenu {{visibility: hidden;}}
       footer {{visibility: hidden;}}
       body {{
-        background-image: url('./images/your_image.jpg'); /* Replace 'your_image.jpg' with the name of your image file */
+        background-image: url('./images/bread-2589595_1280.jpg'); /* Replace 'your_image.jpg' with the name of your image file */
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;

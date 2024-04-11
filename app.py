@@ -14,6 +14,7 @@ st.markdown(
         max-width: 700px;
         margin: 0 auto;
         color: white;
+        background-color: #008080; /* Background color */
     }
     .stTextInput>div>div>input {
         background-color: #f0f0f0;
@@ -38,17 +39,14 @@ st.markdown(
     .stMarkdown {
         color: white;
     }
-    .header {
-        background-color: #333333; /* Header background color */
-        padding: 10px 0;
-    }
     .footer {
         background-color: #444444; /* Footer background color */
         padding: 20px 0;
         text-align: center;
     }
-    .footer a {
+    .footer p {
         color: white;
+        font-size: 16px;
     }
     </style>
     """,
@@ -120,34 +118,11 @@ def footer():
         unsafe_allow_html=True
     )
 
-def header():
-    st.markdown(
-        """
-        <div class="header">
-            <form id="loginForm">
-                <label for="username" style="color: white;">Username:</label>
-                <input type="text" id="username" name="username">
-                <label for="password" style="color: white;">Password:</label>
-                <input type="password" id="password" name="password">
-                <button type="button" onclick="login()">Login</button>
-            </form>
-        </div>
-        <script>
-            function login() {
-                var username = document.getElementById("username").value;
-                var password = document.getElementById("password").value;
-                if (username === 'neha' && password === '1234') {
-                    alert("Login successful!");
-                } else {
-                    alert("Incorrect username or password!");
-                }
-            }
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+def layout(*args):
+    for arg in args:
+        if isinstance(arg, HtmlElement):
+            st.markdown(str(arg), unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    header()
     main()
     footer()

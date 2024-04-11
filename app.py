@@ -1,12 +1,10 @@
 from connection2 import SpoonacularMetadataConnectionProvider
 import streamlit as st
-import speech_recognition as sr
 from connection import SpoonacularConnectionProvider
 from requests import get
 from htbuilder import HtmlElement, div, ul, li, br, hr, a, p, img, styles, classes, fonts
 from htbuilder.units import percent, px
 from htbuilder.funcs import rgba, rgb
-
 # Custom CSS styles
 st.markdown(
     """
@@ -44,24 +42,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-def listen():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.write("Listening...")
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
-
-    try:
-        text = recognizer.recognize_google(audio)
-        st.write("You said:", text)
-        return text
-    except sr.UnknownValueError:
-        st.write("Sorry, could not understand audio")
-        return ""
-    except sr.RequestError as e:
-        st.write("Error occurred during request to Google Speech Recognition service; {0}".format(e))
-        return ""
-
 def main():
     """
     The main function to run the recipe information web app.
@@ -73,14 +53,9 @@ def main():
 
     st.title("Recipedia")
     st.markdown("Enter your desired food name and we'll find you a recipe! :)")
+
+    recipes_input = st.text_input("Enter your preffered food choice")
     
-    recipes_input = st.text_input("Enter your preferred food choice")
-    
-    voice_command = st.checkbox("Voice Command")
-    if voice_command:
-        voice_input = listen()
-        if voice_input:
-            recipes_input = voice_input
 
     if st.button("Get Recipes"):
         try:
@@ -95,19 +70,29 @@ def main():
         except Exception as e:
             st.error(f"Error occurred: {e}")
 
+
+
+
 def display_recipes_data(recipes_data):
+   
     for city, data in recipes_data.items():
         if isinstance(data, str):
             st.markdown(data)
         else:
+
+            
             st.image(data['image'])
             st.markdown(f"## Recipe Name: {data['title']}")
             st.markdown(f"## Recipe ID: {data['id']}")
             api_connection = SpoonacularMetadataConnectionProvider(connection_name='recipeProvider')
 
+
             with st.expander("See Recipe Details"):
                 try:
                     recipe_data = api_connection.query(data['id'])
+
+
+                    # Display recipe details
                     st.image(recipe_data['image'])
                     st.markdown(f"## Price per Serving: {recipe_data['pricePerServing']}")
                     st.markdown(f"## Health Score: {recipe_data['healthScore']}")
@@ -115,13 +100,16 @@ def display_recipes_data(recipes_data):
                     st.markdown(f"## Instructions:")
                     st.markdown(recipe_data['instructions'], unsafe_allow_html=True)
                     st.markdown(f"## Source URL:")
+
                     st.markdown(f"{recipe_data['sourceUrl']}")
                     st.markdown(f"## Ready in Minutes: {recipe_data['readyInMinutes']}")
                 except Exception as e:
                     st.error(f"Error occurred while fetching recipe details: {e}")
                     
-    st.markdown("---")
+            
 
+            
+        st.markdown("---")
 def image(src_as_string, **style):
     return img(src=src_as_string, style=styles(**style))
 
@@ -129,11 +117,16 @@ def link(link, text, **style):
     return a(_href=link, _target="_blank", style=styles(**style))(text)
 
 def layout(*args):
-
-    style = """
+    style = f"""
     <style>
-      # MainMenu {visibility: hidden;}
-      footer {visibility: hidden;}
+      #MainMenu {{visibility: hidden;}}
+      footer {{visibility: hidden;}}
+      body {{
+        background-image: url('./images/your_image.jpg'); /* Replace 'your_image.jpg' with the name of your image file */
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }}
     </style>
     """
 
@@ -147,8 +140,7 @@ def layout(*args):
         opacity=0.6
     )
 
-    style_hr = styles(
-    )
+    style_hr = styles()
 
     body = p()
     foot = div(style=style_div)(hr(style=style_hr), body)
@@ -175,10 +167,11 @@ def footer():
         link("https://github.com/Pavel401", image('https://res.cloudinary.com/dc0tfxkph/image/upload/v1690664339/47685150.jpg',
         	width=px(24), height=px(25), margin= "0em", border_radius=px(50))),
         br(),
-        "<b>About Us</b>: Recipedia is a platform dedicated to helping you find the perfect recipe for any occasion.",
     ]
     layout(*myargs)
-
 if __name__ == "__main__":
     main()
-    footer()
+    
+
+
+footer()

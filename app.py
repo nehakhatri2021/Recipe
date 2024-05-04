@@ -117,16 +117,11 @@ def link(link, text, **style):
     return a(_href=link, _target="_blank", style=styles(**style))(text)
 
 def layout(*args):
-    style = f"""
+
+    style = """
     <style>
-      #MainMenu {{visibility: hidden;}}
-      footer {{visibility: hidden;}}
-      body {{
-        background-image: url('./images/bread-2589595_1280.jpg'); /* Replace 'your_image.jpg' with the name of your image file */
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-      }}
+      # MainMenu {visibility: hidden;}
+      footer {visibility: hidden;}
     </style>
     """
 
@@ -140,7 +135,8 @@ def layout(*args):
         opacity=0.6
     )
 
-    style_hr = styles()
+    style_hr = styles(
+    )
 
     body = p()
     foot = div(style=style_div)(hr(style=style_hr), body)
@@ -163,7 +159,7 @@ def footer():
         ", Streamlit ",
         link("https://streamlit.io/", image('https://res.cloudinary.com/dc0tfxkph/image/upload/v1690664263/pngaaa.com-5084798.png',
         	width=px(24), height=px(25), margin= "0em")),
-        ", and ❤️ in India by Neha ",
+        ", and ❤️ in India by Mabud ",
         link("https://github.com/Pavel401", image('https://res.cloudinary.com/dc0tfxkph/image/upload/v1690664339/47685150.jpg',
         	width=px(24), height=px(25), margin= "0em", border_radius=px(50))),
         br(),

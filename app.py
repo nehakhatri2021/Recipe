@@ -159,9 +159,7 @@ def footer():
         ", Streamlit ",
         link("https://streamlit.io/", image('https://res.cloudinary.com/dc0tfxkph/image/upload/v1690664263/pngaaa.com-5084798.png',
         	width=px(24), height=px(25), margin= "0em")),
-        ", and ❤️ in India by Mabud ",
-        link("https://github.com/Pavel401", image('https://res.cloudinary.com/dc0tfxkph/image/upload/v1690664339/47685150.jpg',
-        	width=px(24), height=px(25), margin= "0em", border_radius=px(50))),
+        ", and ❤️ by MAVENS ",
         br(),
     ]
     layout(*myargs)
